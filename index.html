@@ -12,11 +12,24 @@
 
 <body>
 
-    <div class="scores">
-      <div class="col-md-4">Cards Remaining<div id="remaining"></div></div>
-      <div class="col-md-4" id="currentCount"></div>
-      <div class="col-md-4" id="currentCount"></div>
-    </div>
+    <!-- <div class="scores">
+      <div class="item">Remaining<div id="remaining"></div></div>
+      <div class="item">Count<div id="currentCount"></div></div>
+      <div class="item">other<div id="currentCount"></div></div>
+    </div> -->
+
+    <table style="width:100vw;" class="scores">
+      <tr>
+        <th class="item">Remaining</th>
+        <th class="item">Count</th>
+        <!-- <th class="item">Other</th> -->
+      </tr>
+      <tr>
+          <th id="remaining"></th>
+          <th id="count"></th>
+          <!-- <th id="other"></th> -->
+        </tr>
+    </table>
   
   <div id="cardimg"></div>
 
@@ -34,7 +47,7 @@
     var queryURL = "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count="+numberOfDecks;
     var deckID ='';
     var remaining =(numberOfDecks*52);
-    var currentCount =0;
+    var count =0;
 
     $.ajax({
       url: queryURL,
@@ -44,6 +57,7 @@
       deckID = (response.deck_id);
       console.log(response.deck_id);
       $('#remaining').text(remaining);
+      $('#count').text(count);
     });
 
     $('#button').click(function getCard() {
@@ -54,11 +68,25 @@
         url: queryURL2,
         method: "GET"
         }).then(function(response) {
-        console.log(response.remaining);
+        var value = (response.cards[0].value);
         remaining  = (response.remaining);
         $('#cardimg').html('<img src="'+ response.cards[0].image +'"/>');
         $('#remaining').text(remaining);
-
+        console.log(value);
+        
+        if (value === '1' || value === '2' || value === '3' || value === '4' || value === '5' || value === '6') {
+          console.log('worth 1');
+          count ++;
+          $('#count').text(count);
+        }
+        if (value === '7' || value === '8' || value === '9') {
+          console.log('worth 0');
+        }
+        if (value === '10' || value === 'JACK' || value === 'QUEEN' || value === 'KING' || value === 'ACE')  {
+          count --;
+          $('#count').text(count);
+          console.log('worth -1');
+        }
         
     });
     });
@@ -67,7 +95,7 @@
   <style>
 
     body {
-        height: 100vh;
+        height: 90vh;
         background-color: #1D1D1D;
         display: flex;
         align-items: center;
@@ -82,12 +110,13 @@
       font-size: 55px;
       position: absolute;
       top: 0;
-      display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        width: 100%;
-        text-align: center;
+      text-align: center;
+      width: 100vw;
+    }
+
+    .item {
+      width: 50%;
+      text-align: center;
     }
 
     #remaining {
